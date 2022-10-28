@@ -37,7 +37,7 @@ public class DeviceController {
     @PostMapping("/calculate")
     public ResponseEntity<CalculateOutput> calculate(@RequestBody CalculateInput payload){
         return new ResponseEntity<CalculateOutput>(
-                deviceService.calculateCostDetail(payload),
+                deviceService.calculateDetailedCost(payload),
                 HttpStatus.OK);
     }
 

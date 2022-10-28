@@ -42,7 +42,7 @@ public class DeviceService {
         return deviceConverter.toDeviceResponse(optional.get());
     }
 
-    public CalculateOutput calculateCostDetail(CalculateInput payload){
+    public CalculateOutput calculateDetailedCost(CalculateInput payload){
 
         BigDecimal totalCustomer = BigDecimal.ZERO;
         final MathContext mathContext = new MathContext(2);

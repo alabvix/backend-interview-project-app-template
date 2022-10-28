@@ -17,6 +17,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.data:spring-data-jpa'
+	implementation('org.springframework.boot:spring-boot-starter-validation')
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.6.6'
+	implementation group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+	implementation group: 'org.hibernate.validator', name: 'hibernate-validator', version: '6.0.13.Final'
+	testImplementation group: 'org.glassfish', name: 'jakarta.el', version: '4.0.2'
+	implementation 'io.springfox:springfox-boot-starter:3.0.0'
 	runtimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'

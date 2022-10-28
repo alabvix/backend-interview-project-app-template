@@ -12,6 +12,10 @@ Go to:
 
 You should see results for both of these. The application is working and connected to the H2 database. 
 
+## Swagger UI
+Go to: 
+http://localhost:8080/swagger-ui/index.html
+
 ## H2 Console 
 
 In order to see and interact with your db, access the h2 console in your browser.

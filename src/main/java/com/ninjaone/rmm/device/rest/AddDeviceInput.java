@@ -6,7 +6,7 @@ import com.ninjaone.rmm.device.validation.DeviceSystemName;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-public class AddDevicePayload {
+public class AddDeviceInput {
 
     @DeviceSystemName
     @NotNull(message = "System Name cannot be null")
@@ -16,12 +16,12 @@ public class AddDevicePayload {
     @NotNull(message = "Device Type cannot be null")
     public final DeviceType deviceType;
 
-    public AddDevicePayload(){
+    public AddDeviceInput(){
         this.systemName = "";
         this.deviceType = null;
     }
 
-    public AddDevicePayload(String systemName, DeviceType deviceType) {
+    public AddDeviceInput(String systemName, DeviceType deviceType) {
         this.systemName = systemName;
         this.deviceType = deviceType;
     }

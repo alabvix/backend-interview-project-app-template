@@ -21,13 +21,24 @@ public class DeviceController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<DeviceResponse> addDevice(@Valid @RequestBody AddDevicePayload payload){
-        return new ResponseEntity<>(deviceService.saveDevice(payload), HttpStatus.CREATED);
+    public ResponseEntity<DeviceResponse> addDevice(@Valid @RequestBody AddDeviceInput payload){
+        return new ResponseEntity<>(
+                deviceService.saveDevice(payload),
+                HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<DeviceResponse> getDevice(@PathVariable String id){
-        return new ResponseEntity<DeviceResponse>(deviceService.getDevice(Long.parseLong(id)), HttpStatus.OK);
+        return new ResponseEntity<DeviceResponse>(
+                deviceService.getDevice(Long.parseLong(id)),
+                HttpStatus.OK);
+    }
+
+    @PostMapping("/calculate")
+    public ResponseEntity<CalculateOutput> calculate(@RequestBody CalculateInput payload){
+        return new ResponseEntity<CalculateOutput>(
+                deviceService.calculateCostDetail(payload),
+                HttpStatus.OK);
     }
 
 //

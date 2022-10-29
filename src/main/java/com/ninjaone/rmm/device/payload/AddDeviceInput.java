@@ -1,4 +1,4 @@
-package com.ninjaone.rmm.device.rest;
+package com.ninjaone.rmm.device.payload;
 
 import com.ninjaone.rmm.device.DeviceType;
 import com.ninjaone.rmm.device.validation.DeviceSystemName;

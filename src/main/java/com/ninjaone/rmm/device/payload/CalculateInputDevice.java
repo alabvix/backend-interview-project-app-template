@@ -1,15 +1,15 @@
-package com.ninjaone.rmm.device.rest;
+package com.ninjaone.rmm.device.payload;
 
-public class DeviceInput {
+public class CalculateInputDevice {
     public final Long deviceId;
     public final int quantity;
 
-    public DeviceInput(){
+    public CalculateInputDevice(){
         deviceId = 0L;
         quantity = 0;
     }
 
-    public DeviceInput(Long deviceId, int quantity) {
+    public CalculateInputDevice(Long deviceId, int quantity) {
         this.deviceId = deviceId;
         this.quantity = quantity;
     }

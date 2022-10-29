@@ -18,8 +18,8 @@ public class ServiceEntity {
 
     private BigDecimal cost;
 
-    @ManyToMany(mappedBy = "services")
-    private List<DeviceEntity> devices = new ArrayList<>();
+//    @ManyToMany(mappedBy = "services")
+//    private List<DeviceEntity> devices = new ArrayList<>();
 
     public ServiceEntity(){}
 
@@ -53,11 +53,11 @@ public class ServiceEntity {
         this.cost = cost;
     }
 
-    public List<DeviceEntity> getDevices() {
-        return devices;
-    }
-
-    public void setDevices(List<DeviceEntity> devices) {
-        this.devices = devices;
-    }
+//    public List<DeviceEntity> getDevices() {
+//        return devices;
+//    }
+//
+//    public void setDevices(List<DeviceEntity> devices) {
+//        this.devices = devices;
+//    }
 }

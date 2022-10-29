@@ -1,6 +1,7 @@
 package com.ninjaone.rmm.common;
 
-import com.ninjaone.rmm.device.DeviceNotFoundException;
+import com.ninjaone.rmm.device.exception.DeviceNotFoundException;
+import com.ninjaone.rmm.device.exception.ServiceAlreadyAssociatedToDeviceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -24,6 +25,12 @@ public class RmmExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex) {
+        Map<String, String> body = getBody(ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ServiceAlreadyAssociatedToDeviceException.class)
+    public ResponseEntity<Object> handleServiceAlreadyAssociatedException(ServiceAlreadyAssociatedToDeviceException ex) {
         Map<String, String> body = getBody(ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }

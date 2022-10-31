@@ -4,7 +4,6 @@ import com.ninjaone.rmm.service.ServiceEntity;
 
 import javax.persistence.*;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity(name="device")
@@ -20,12 +19,6 @@ public class DeviceEntity {
 
     private DeviceType deviceType;
 
-//    @ManyToMany
-//    @JoinTable(
-//            name = "device_service",
-//            joinColumns = { @JoinColumn(name = "device_id") },
-//            inverseJoinColumns = { @JoinColumn(name = "service_id") }
-//    )
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "devices")
     private Set<ServiceEntity> services = new HashSet<>();
 

@@ -1,7 +1,6 @@
 package com.ninjaone.rmm.device;
 
 import com.ninjaone.rmm.device.exception.DeviceNotFoundException;
-import com.ninjaone.rmm.device.exception.ServiceAlreadyAssociatedToDeviceException;
 import com.ninjaone.rmm.device.payload.*;
 import com.ninjaone.rmm.service.ServiceEntity;
 import com.ninjaone.rmm.service.ServiceNotFoundException;
@@ -9,10 +8,12 @@ import com.ninjaone.rmm.service.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,7 +45,6 @@ public class DeviceService {
         return deviceConverter.toAddDeviceOutput(deviceRepository.save(device));
     }
 
-    //@Transactional
     public void deleteDevice(Long deviceId) {
         DeviceEntity device = this.getDevice(deviceId);
 

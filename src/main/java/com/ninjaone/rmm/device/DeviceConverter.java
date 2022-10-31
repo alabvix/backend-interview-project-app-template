@@ -20,7 +20,7 @@ public class DeviceConverter {
         return device;
     }
 
-    public GetDeviceOutput toDeviceOutput(DeviceEntity entity) {
+    public GetDeviceOutput toGetDeviceOutput(DeviceEntity entity) {
         return new GetDeviceOutput(
                 entity.getId(),
                 entity.getSystemName(),

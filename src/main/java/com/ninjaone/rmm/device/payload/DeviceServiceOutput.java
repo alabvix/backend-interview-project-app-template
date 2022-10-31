@@ -3,21 +3,25 @@ package com.ninjaone.rmm.device.payload;
 import java.math.BigDecimal;
 
 public class DeviceServiceOutput {
-    public final Long systemId;
+    public final Long serviceId;
 
     public final String name;
 
     public final BigDecimal cost;
 
     public DeviceServiceOutput() {
-        this.systemId = 0L;
+        this.serviceId = 0L;
         this.name = "";
         this.cost = BigDecimal.ZERO;
     }
 
-    public DeviceServiceOutput(Long systemId, String name, BigDecimal cost) {
-        this.systemId = systemId;
+    public DeviceServiceOutput(Long serviceId, String name, BigDecimal cost) {
+        this.serviceId = serviceId;
         this.name = name;
         this.cost = cost;
+    }
+
+    public Long getServiceId() {
+        return serviceId;
     }
 }

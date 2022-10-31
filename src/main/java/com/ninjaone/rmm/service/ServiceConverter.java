@@ -1,7 +1,9 @@
 package com.ninjaone.rmm.service;
 
 import com.ninjaone.rmm.device.DeviceEntity;
+import com.ninjaone.rmm.device.payload.AddDeviceOutput;
 import com.ninjaone.rmm.service.payload.AddServiceInput;
+import com.ninjaone.rmm.service.payload.AddServiceOutput;
 import com.ninjaone.rmm.service.payload.ServiceDeviceOutput;
 import com.ninjaone.rmm.service.payload.GetServiceOutput;
 import org.springframework.stereotype.Component;
@@ -28,6 +30,13 @@ public class ServiceConverter {
                         .stream()
                         .map(this::toServiceDeviceOutput).collect(Collectors.toList())
         );
+    }
+
+    public AddServiceOutput toAddServiceOutput(ServiceEntity entity) {
+        return new AddServiceOutput(
+                entity.getId(),
+                entity.getName(),
+                entity.getCost());
     }
 
     private ServiceDeviceOutput toServiceDeviceOutput(DeviceEntity device) {

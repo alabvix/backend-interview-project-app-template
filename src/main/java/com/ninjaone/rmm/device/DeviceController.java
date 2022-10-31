@@ -58,7 +58,7 @@ public class DeviceController {
     @PutMapping("/")
     @ApiOperation(value = "This method is used to update an existent device.")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateDevice(@RequestBody UpdateDeviceInput input){
+    public void updateDevice(@Valid @RequestBody UpdateDeviceInput input){
         deviceService.updateDevice(input);
     }
 
@@ -66,13 +66,6 @@ public class DeviceController {
     @ApiOperation(value = "This method is used to associate existent services to an existent device.")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void associateServices(@RequestBody AssociateDeviceServicesInput payload){
-        deviceService.associateServices(payload);
-    }
-
-    @DeleteMapping("/remove/services")
-    @ApiOperation(value = "This method is used to remove device associated services.")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeServices(@RequestBody AssociateDeviceServicesInput payload){
         deviceService.associateServices(payload);
     }
 

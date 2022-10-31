@@ -8,6 +8,7 @@ import com.ninjaone.rmm.service.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class DeviceService {
     }
 
     public GetDeviceOutput getDeviceById(Long deviceId){
-        return deviceConverter.toDeviceOutput(this.getDevice(deviceId));
+        return deviceConverter.toGetDeviceOutput(this.getDevice(deviceId));
     }
 
     public AddDeviceOutput addDevice(AddDeviceInput input){
@@ -55,6 +56,7 @@ public class DeviceService {
         deviceRepository.delete(device);
     }
 
+    @Transactional
     public void associateServices(AssociateDeviceServicesInput input) {
         final DeviceEntity device = getDevice(input.deviceId);
 
@@ -69,12 +71,15 @@ public class DeviceService {
             Optional<ServiceEntity> opService = serviceRepository.findById(id);
             if (opService.isPresent()){
                 device.addService(opService.get());
+                opService.get().addDevice(device);
+                serviceRepository.save(opService.get());
             } else {
                 throw new ServiceNotFoundException("Service not found with id: " + id);
             }
         }
 
         deviceRepository.save(device);
+
     }
 
     public void updateDevice(UpdateDeviceInput input) {
@@ -98,7 +103,7 @@ public class DeviceService {
                     .map(s -> s.getCost().multiply(BigDecimal.valueOf(deviceInput.quantity)))
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-            totalCustomer = totalCustomer.add(totalCost, mathContext);
+            totalCustomer = totalCustomer.add(totalCost);
         }
 
         return new CalculateOutput(totalCustomer);
@@ -118,7 +123,7 @@ public class DeviceService {
 
             devices.add(new CalculateDetailedDeviceOutput(device.getId(), device.getSystemName(), totalCost, services));
 
-            totalCustomer = totalCustomer.add(totalCost, mathContext);
+            totalCustomer = totalCustomer.add(totalCost);
         }
 
         return new CalculateDetailedOutput(totalCustomer, devices);
@@ -135,11 +140,14 @@ public class DeviceService {
 
     private BigDecimal calculateServicesTotalCost(int quantity, DeviceEntity device, List<CalculateDetailedServiceOutput> services) {
         BigDecimal totalCost = BigDecimal.ZERO;
+
         for (ServiceEntity service: device.getServices()) {
             final BigDecimal serviceCost = service.getCost().multiply(BigDecimal.valueOf(quantity));
-            totalCost = totalCost.add(serviceCost, mathContext);
+            //totalCost = totalCost.add(serviceCost, mathContext);
+            totalCost = totalCost.add(serviceCost);
             services.add(new CalculateDetailedServiceOutput(service.getId(), service.getName(), serviceCost));
         }
+
         return totalCost;
     }
 

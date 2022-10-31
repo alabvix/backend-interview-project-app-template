@@ -21,4 +21,8 @@ public class ServiceDeviceOutput {
         this.systemName = systemName;
         this.deviceType = deviceType;
     }
+
+    public Long getId() {
+        return id;
+    }
 }

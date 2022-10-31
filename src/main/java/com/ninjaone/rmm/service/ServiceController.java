@@ -1,6 +1,7 @@
 package com.ninjaone.rmm.service;
 
 import com.ninjaone.rmm.service.payload.AddServiceInput;
+import com.ninjaone.rmm.service.payload.AddServiceOutput;
 import com.ninjaone.rmm.service.payload.GetServiceOutput;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,13 +25,13 @@ public class ServiceController {
     @GetMapping("/{id}")
     @ApiOperation(value = "This method is used to get a service by your id.")
     public ResponseEntity<GetServiceOutput> getService(@PathVariable String id){
-        return new ResponseEntity<>(service.getService(Long.parseLong(id)), HttpStatus.OK);
+        return new ResponseEntity<>(service.getServiceById(Long.parseLong(id)), HttpStatus.OK);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "This method is used to add a new Service.")
-    public ResponseEntity<GetServiceOutput> addDevice(@Valid @RequestBody AddServiceInput input){
+    public ResponseEntity<AddServiceOutput> addDevice(@Valid @RequestBody AddServiceInput input){
         return new ResponseEntity<>(
                 service.addService(input),
                 HttpStatus.CREATED);

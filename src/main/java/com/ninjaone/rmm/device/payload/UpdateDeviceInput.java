@@ -19,6 +19,12 @@ public class UpdateDeviceInput {
     @NotNull(message = "Device Type cannot be null")
     public final DeviceType deviceType;
 
+    public UpdateDeviceInput(){
+        this.id = 0L;
+        this.systemName = "";
+        this.deviceType = DeviceType.WINDOWS_WORKSTATION;
+    }
+
     public UpdateDeviceInput(Long id, String systemName, DeviceType deviceType) {
         this.id = id;
         this.systemName = systemName;

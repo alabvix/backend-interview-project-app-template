@@ -5,8 +5,6 @@ import com.ninjaone.rmm.device.validation.DeviceSystemName;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AddDeviceInput {
 
@@ -18,18 +16,14 @@ public class AddDeviceInput {
     @NotNull(message = "Device Type cannot be null")
     public final DeviceType deviceType;
 
-    public final List<Long> servicesId;
-
     public AddDeviceInput(){
         this.systemName = "";
         this.deviceType = null;
-        this.servicesId = new ArrayList<>();
     }
 
-    public AddDeviceInput(String systemName, DeviceType deviceType, List<Long> serviceId) {
+    public AddDeviceInput(String systemName, DeviceType deviceType) {
         this.systemName = systemName;
         this.deviceType = deviceType;
-        this.servicesId = serviceId;
     }
 
 }

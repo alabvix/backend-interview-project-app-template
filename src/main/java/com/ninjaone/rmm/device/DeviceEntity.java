@@ -3,7 +3,9 @@ package com.ninjaone.rmm.device;
 import com.ninjaone.rmm.service.ServiceEntity;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity(name="device")
 public class DeviceEntity {
@@ -18,17 +20,18 @@ public class DeviceEntity {
 
     private DeviceType deviceType;
 
-    @ManyToMany(cascade = { CascadeType.ALL })
-    @JoinTable(
-            name = "device_service",
-            joinColumns = { @JoinColumn(name = "device_id") },
-            inverseJoinColumns = { @JoinColumn(name = "service_id") }
-    )
-    List<ServiceEntity> services;
+//    @ManyToMany
+//    @JoinTable(
+//            name = "device_service",
+//            joinColumns = { @JoinColumn(name = "device_id") },
+//            inverseJoinColumns = { @JoinColumn(name = "service_id") }
+//    )
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "devices")
+    private Set<ServiceEntity> services = new HashSet<>();
 
     public DeviceEntity(){}
 
-    public DeviceEntity(Long id, String systemName, DeviceType deviceType, List<ServiceEntity> services) {
+    public DeviceEntity(Long id, String systemName, DeviceType deviceType, Set<ServiceEntity> services) {
         this.id = id;
         this.systemName = systemName;
         this.deviceType = deviceType;
@@ -59,11 +62,11 @@ public class DeviceEntity {
         this.deviceType = deviceType;
     }
 
-    public List<ServiceEntity> getServices() {
+    public Set<ServiceEntity> getServices() {
         return services;
     }
 
-    public void setServices(List<ServiceEntity> services) {
+    public void setServices(Set<ServiceEntity> services) {
         this.services = services;
     }
 
@@ -74,4 +77,14 @@ public class DeviceEntity {
     public void setSystemNameConcat(String systemNameConcat) {
         this.systemNameConcat = systemNameConcat;
     }
+
+    public void addService(ServiceEntity service) {
+        this.services.add(service);
+    }
+
+    public void removeService(ServiceEntity service) {
+        this.services.remove(service);
+        service.getDevices().remove(this);
+    }
+
 }

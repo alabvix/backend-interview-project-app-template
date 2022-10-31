@@ -25,14 +25,14 @@ public class DeviceController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "This method is used to add a new Device.")
-    public ResponseEntity<DeviceOutput> addDevice(@Valid @RequestBody AddDeviceInput payload){
+    public ResponseEntity<AddDeviceOutput> addDevice(@Valid @RequestBody AddDeviceInput payload){
         return new ResponseEntity<>(
                 deviceService.addDevice(payload),
                 HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    @ApiOperation(value = "This method is used to get a device by yours id.")
+    @ApiOperation(value = "This method is used to get a device by your id.")
     public ResponseEntity<DeviceOutput> getDevice(@PathVariable String id){
         return new ResponseEntity<DeviceOutput>(
                 deviceService.getDeviceById(Long.parseLong(id)),
@@ -55,10 +55,24 @@ public class DeviceController {
                 HttpStatus.OK);
     }
 
+    @PutMapping("/")
+    @ApiOperation(value = "This method is used to update an existent device.")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateDevice(@RequestBody UpdateDeviceInput input){
+        deviceService.updateDevice(input);
+    }
+
     @PutMapping("/associate/services")
     @ApiOperation(value = "This method is used to associate existent services to an existent device.")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void associateServices(@RequestBody AssociateDeviceServicesInput payload){
+        deviceService.associateServices(payload);
+    }
+
+    @DeleteMapping("/remove/services")
+    @ApiOperation(value = "This method is used to remove device associated services.")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeServices(@RequestBody AssociateDeviceServicesInput payload){
         deviceService.associateServices(payload);
     }
 

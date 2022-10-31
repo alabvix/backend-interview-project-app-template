@@ -4,16 +4,15 @@ import com.ninjaone.rmm.device.exception.DeviceNotFoundException;
 import com.ninjaone.rmm.device.exception.ServiceAlreadyAssociatedToDeviceException;
 import com.ninjaone.rmm.device.payload.*;
 import com.ninjaone.rmm.service.ServiceEntity;
+import com.ninjaone.rmm.service.ServiceNotFoundException;
 import com.ninjaone.rmm.service.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,62 +35,49 @@ public class DeviceService {
         this.deviceConverter = deviceConverter;
     }
 
-    public void deleteDevice(Long deviceId) {
-        deviceRepository.delete(this.getDevice(deviceId));
+    public DeviceOutput getDeviceById(Long deviceId){
+        return deviceConverter.toDeviceOutput(this.getDevice(deviceId));
     }
 
-    public DeviceOutput addDevice(AddDeviceInput input){
+    public AddDeviceOutput addDevice(AddDeviceInput input){
+        final DeviceEntity device = deviceConverter.toEntity(input);
+        return deviceConverter.toAddDeviceOutput(deviceRepository.save(device));
+    }
 
-        DeviceEntity device = deviceConverter.toEntity(input);
-        device = deviceRepository.save(device);
+    //@Transactional
+    public void deleteDevice(Long deviceId) {
+        DeviceEntity device = this.getDevice(deviceId);
 
-        if (input.servicesId.size() > 0) {
-            input.servicesId.forEach(i->{
-                Optional<ServiceEntity> opService = serviceRepository.findById(i);
-                if (opService.isPresent()) {
-
-                }
-            });
-
+        for (ServiceEntity service: device.getServices()){
+            service.removeDevice(device);
         }
 
-        return deviceConverter.toDeviceOutput(device);
+        deviceRepository.delete(device);
     }
 
     public void associateServices(AssociateDeviceServicesInput input) {
         final DeviceEntity device = getDevice(input.deviceId);
 
-        List<Long> filteredServicesId = input.servicesId.stream().distinct().collect(Collectors.toList());
+        final List<Long> filteredServicesId = input.servicesId.stream().distinct().collect(Collectors.toList());
 
-        List<ServiceEntity> associatedServices = device.getServices().stream()
-                        .filter(s -> filteredServicesId.stream()
-                                .anyMatch(sid -> Objects.equals(sid, s.getId()))
-                        ).collect(Collectors.toList());
+        for (Long id: filteredServicesId){
+            final long total = device.getServices().stream().filter(s->Objects.equals(s.getId(), id)).count();
+            if (total > 0) {
+                continue;
+            }
 
-        if (!associatedServices.isEmpty()) {
-            final List<String> serviceNames = associatedServices.stream()
-                    .map(ServiceEntity::getName).collect(Collectors.toList());
-            throw new ServiceAlreadyAssociatedToDeviceException("Services already associated to device: " +
-                    serviceNames);
+            Optional<ServiceEntity> opService = serviceRepository.findById(id);
+            if (opService.isPresent()){
+                device.addService(opService.get());
+            } else {
+                throw new ServiceNotFoundException("Service not found with id: " + id);
+            }
         }
 
-        List<ServiceEntity> services = new ArrayList<>();
-        filteredServicesId.forEach(i->{
-            Optional<ServiceEntity> opService = serviceRepository.findById(i);
-            if (opService.isPresent()){
-                services.add(opService.get());
-            } else {
-                throw new RuntimeException("Service not found with id: " + i);
-            }
-        });
-
-        device.setServices(services);
         deviceRepository.save(device);
-
     }
 
     public void updateDevice(UpdateDeviceInput input) {
-
         final DeviceEntity device = getDevice(input.id);
 
         device.setSystemName(input.systemName);
@@ -100,15 +86,11 @@ public class DeviceService {
         deviceRepository.save(device);
     }
 
-    public DeviceOutput getDeviceById(Long deviceId){
-        return deviceConverter.toDeviceOutput(this.getDevice(deviceId));
-    }
-
-    public CalculateOutput calculateCost(CalculateInput payload) {
+    public CalculateOutput calculateCost(CalculateInput input) {
 
         BigDecimal totalCustomer = BigDecimal.ZERO;
 
-        for (CalculateInputDevice deviceInput: payload.getDevices()) {
+        for (CalculateInputDevice deviceInput: input.getDevices()) {
 
             final DeviceEntity device = getDevice(deviceInput.deviceId);
 
@@ -155,7 +137,7 @@ public class DeviceService {
         BigDecimal totalCost = BigDecimal.ZERO;
         for (ServiceEntity service: device.getServices()) {
             final BigDecimal serviceCost = service.getCost().multiply(BigDecimal.valueOf(quantity));
-            totalCost = totalCost.add(serviceCost);
+            totalCost = totalCost.add(serviceCost, mathContext);
             services.add(new CalculateDetailedServiceOutput(service.getId(), service.getName(), serviceCost));
         }
         return totalCost;

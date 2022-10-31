@@ -4,8 +4,8 @@ import com.ninjaone.rmm.device.DeviceEntity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity(name="service")
 public class ServiceEntity {
@@ -16,10 +16,17 @@ public class ServiceEntity {
 
     private String name;
 
+    private String nameConcat;
+
     private BigDecimal cost;
 
-//    @ManyToMany(mappedBy = "services")
-//    private List<DeviceEntity> devices = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name = "service_device",
+            joinColumns = { @JoinColumn(name = "service_id") },
+            inverseJoinColumns = { @JoinColumn(name = "device_id") }
+    )
+    private Set<DeviceEntity> devices = new HashSet<>();
 
     public ServiceEntity(){}
 
@@ -53,11 +60,27 @@ public class ServiceEntity {
         this.cost = cost;
     }
 
-//    public List<DeviceEntity> getDevices() {
-//        return devices;
-//    }
-//
-//    public void setDevices(List<DeviceEntity> devices) {
-//        this.devices = devices;
-//    }
+    public Set<DeviceEntity> getDevices() {
+        return devices;
+    }
+
+    public void setDevices(Set<DeviceEntity> devices) {
+        this.devices = devices;
+    }
+
+    public String getNameConcat() {
+        return nameConcat;
+    }
+
+    public void setNameConcat(String nameConcat) {
+        this.nameConcat = nameConcat;
+    }
+
+    public void addDevice(DeviceEntity device){
+        this.devices.add(device);
+    }
+
+    public void removeDevice(DeviceEntity device){
+        this.devices.remove(device);
+    }
 }

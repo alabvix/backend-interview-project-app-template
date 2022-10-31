@@ -249,8 +249,7 @@ public class DeviceServiceUnitTest {
     public void addDevice(){
         // given
         AddDeviceInput input = new AddDeviceInput("Ubuntu Linux", DeviceType.LINUX_WORKSTATION);
-        DeviceOutput expectedOutput = new DeviceOutput(1L,"Ubuntu Linux", DeviceType.LINUX_WORKSTATION,
-                new ArrayList<>());
+        AddDeviceOutput expectedOutput = new AddDeviceOutput(1L,"Ubuntu Linux", DeviceType.LINUX_WORKSTATION);
         final DeviceEntity device = new DeviceEntity(null, "Ubuntu Linux",
                 DeviceType.LINUX_WORKSTATION, new HashSet<>());
 
@@ -258,7 +257,7 @@ public class DeviceServiceUnitTest {
                 DeviceType.LINUX_WORKSTATION, new HashSet<>());
 
         when(deviceConverter.toEntity(input)).thenReturn(device);
-        when(deviceConverter.toDeviceOutput(savedDevice)).thenReturn(expectedOutput);
+        when(deviceConverter. toAddDeviceOutput(savedDevice)).thenReturn(expectedOutput);
         when(deviceRepository.save(device)).thenReturn(savedDevice);
 
         // when
@@ -271,7 +270,7 @@ public class DeviceServiceUnitTest {
 
         verify(deviceRepository, times(1)).save(device);
         verify(deviceConverter, times(1)).toEntity(input);
-        verify(deviceConverter, times(1)).toDeviceOutput(savedDevice);
+        verify(deviceConverter, times(1)).toAddDeviceOutput(savedDevice);
 
     }
 

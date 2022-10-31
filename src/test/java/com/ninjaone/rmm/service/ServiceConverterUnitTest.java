@@ -3,7 +3,7 @@ package com.ninjaone.rmm.service;
 import com.ninjaone.rmm.device.DeviceEntity;
 import com.ninjaone.rmm.device.DeviceType;
 import com.ninjaone.rmm.service.payload.AddServiceInput;
-import com.ninjaone.rmm.service.payload.ServiceOutput;
+import com.ninjaone.rmm.service.payload.GetServiceOutput;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -50,7 +50,7 @@ public class ServiceConverterUnitTest {
         service.setDevices(devices);
 
         // when
-        final ServiceOutput output = serviceConverter.toServiceOutput(service);
+        final GetServiceOutput output = serviceConverter.toGetServiceOutput(service);
 
         // then
         assertEquals(service.getId(), output.serviceId);

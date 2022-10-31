@@ -36,7 +36,7 @@ public class DeviceService {
         this.deviceConverter = deviceConverter;
     }
 
-    public DeviceOutput getDeviceById(Long deviceId){
+    public GetDeviceOutput getDeviceById(Long deviceId){
         return deviceConverter.toDeviceOutput(this.getDevice(deviceId));
     }
 
@@ -142,7 +142,6 @@ public class DeviceService {
         }
         return totalCost;
     }
-
 
 }
 

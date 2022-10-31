@@ -33,8 +33,8 @@ public class DeviceController {
 
     @GetMapping("/{id}")
     @ApiOperation(value = "This method is used to get a device by your id.")
-    public ResponseEntity<DeviceOutput> getDevice(@PathVariable String id){
-        return new ResponseEntity<DeviceOutput>(
+    public ResponseEntity<GetDeviceOutput> getDevice(@PathVariable String id){
+        return new ResponseEntity<GetDeviceOutput>(
                 deviceService.getDeviceById(Long.parseLong(id)),
                 HttpStatus.OK);
     }

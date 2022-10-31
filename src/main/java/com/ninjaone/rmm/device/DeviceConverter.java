@@ -2,7 +2,7 @@ package com.ninjaone.rmm.device;
 
 import com.ninjaone.rmm.device.payload.AddDeviceInput;
 import com.ninjaone.rmm.device.payload.AddDeviceOutput;
-import com.ninjaone.rmm.device.payload.DeviceOutput;
+import com.ninjaone.rmm.device.payload.GetDeviceOutput;
 import com.ninjaone.rmm.device.payload.DeviceServiceOutput;
 import com.ninjaone.rmm.service.ServiceEntity;
 import org.springframework.stereotype.Component;
@@ -20,8 +20,8 @@ public class DeviceConverter {
         return device;
     }
 
-    public DeviceOutput toDeviceOutput(DeviceEntity entity) {
-        return new DeviceOutput(
+    public GetDeviceOutput toDeviceOutput(DeviceEntity entity) {
+        return new GetDeviceOutput(
                 entity.getId(),
                 entity.getSystemName(),
                 entity.getDeviceType(),

@@ -1,9 +1,9 @@
 package com.ninjaone.rmm.device;
 
 import com.ninjaone.rmm.device.payload.*;
+import com.ninjaone.rmm.helper.IntegrationTestHelper;
 import com.ninjaone.rmm.service.payload.GetServiceOutput;
 import com.ninjaone.rmm.service.payload.ServiceDeviceOutput;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,6 +35,9 @@ public class DeviceIntegrationTest {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
+    @Autowired
+    private IntegrationTestHelper testHelper;
+
     @Value("${test.url}")
     private String testBaseUrl;
 
@@ -51,24 +54,24 @@ public class DeviceIntegrationTest {
     @BeforeEach
     public void beforeEach() throws Exception {
         this.baseUrl = this.testBaseUrl + this.port +"/";
-        final ResponseEntity<String> response = authenticate();
+        final ResponseEntity<String> response = testHelper.authenticate(
+                this.baseUrl,
+                this.username,
+                this.password);
         final String body = response.getBody();
         assert body != null;
         this.authToken = body.substring(4);
     }
 
     @Test
-    public void test() throws Exception{
-        HttpEntity<String> request = new HttpEntity<>(getAuthHeaders());
+    @DisplayName("Try to create a device with an empty name. Should return Http status 400")
+    public void createADeviceWithEmptyName() throws Exception {
+        AddDeviceInput input = new AddDeviceInput("", DeviceType.WINDOWS_SERVER);
+        HttpEntity<AddDeviceInput> addRequest = new HttpEntity<>(input, testHelper.getAuthHeaders(authToken));
+        ResponseEntity<AddDeviceOutput> response = testRestTemplate
+                .exchange(getUri("device"), HttpMethod.POST, addRequest, AddDeviceOutput.class);
 
-        ResponseEntity<GetDeviceOutput> response = testRestTemplate
-                .exchange(
-                    getUri("device/1"),
-                    HttpMethod.GET,
-                    request,
-                    GetDeviceOutput.class);
-
-        System.out.println(response);
+        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -77,7 +80,7 @@ public class DeviceIntegrationTest {
 
         // Add a new Device
         AddDeviceInput input = new AddDeviceInput("Windows Server Ultimate", DeviceType.WINDOWS_SERVER);
-        HttpEntity<AddDeviceInput> addRequest = new HttpEntity<>(input, getAuthHeaders());
+        HttpEntity<AddDeviceInput> addRequest = new HttpEntity<>(input, testHelper.getAuthHeaders(authToken));
         ResponseEntity<AddDeviceOutput> response = testRestTemplate
                 .exchange(getUri("device"), HttpMethod.POST, addRequest, AddDeviceOutput.class);
 
@@ -89,12 +92,13 @@ public class DeviceIntegrationTest {
         assertEquals(deviceOutput.systemName, "Windows Server Ultimate");
         assertEquals(deviceOutput.deviceType, DeviceType.WINDOWS_SERVER);
 
-        // Associate two existent services
+        // Associates two existent services
         List<Long> serviceIds = new ArrayList<>();
         serviceIds.add(1L);
         serviceIds.add(2L);
         AssociateDeviceServicesInput associateInput = new AssociateDeviceServicesInput(deviceOutput.id, serviceIds);
-        HttpEntity<AssociateDeviceServicesInput> associateRequest = new HttpEntity<>(associateInput, getAuthHeaders());
+        HttpEntity<AssociateDeviceServicesInput> associateRequest = new HttpEntity<>(associateInput,
+                testHelper.getAuthHeaders(authToken));
 
         ResponseEntity<String> associateResponse = testRestTemplate
                 .exchange(getUri("device/associate/services"), HttpMethod.PUT, associateRequest, String.class);
@@ -102,7 +106,7 @@ public class DeviceIntegrationTest {
         assertEquals(associateResponse.getStatusCode(), HttpStatus.NO_CONTENT);
 
         // Gets the service and check if the device was associated
-        HttpEntity<String> getServiceRequest = new HttpEntity<>(getAuthHeaders());
+        HttpEntity<String> getServiceRequest = new HttpEntity<>(testHelper.getAuthHeaders(authToken));
         ResponseEntity<GetServiceOutput> getServiceResponse = testRestTemplate.exchange(
                 getUri("service/1"),
                 HttpMethod.GET,
@@ -120,7 +124,7 @@ public class DeviceIntegrationTest {
         assertEquals(DeviceType.WINDOWS_SERVER, serviceOutput.devices.get(2).deviceType);
 
         // Gets the device and check the services
-        HttpEntity<String> getRequest = new HttpEntity<>(getAuthHeaders());
+        HttpEntity<String> getRequest = new HttpEntity<>(testHelper.getAuthHeaders(authToken));
         ResponseEntity<GetDeviceOutput> getResponse = testRestTemplate.exchange(
                 getUri("device/" + deviceOutput.id),
                 HttpMethod.GET,
@@ -148,7 +152,8 @@ public class DeviceIntegrationTest {
         CalculateInput calculateInput = new CalculateInput();
         calculateInput.setDevices(devices);
 
-        HttpEntity<CalculateInput> calculateRequest = new HttpEntity<>(calculateInput, getAuthHeaders());
+        HttpEntity<CalculateInput> calculateRequest = new HttpEntity<>(calculateInput,
+                testHelper.getAuthHeaders(authToken));
         ResponseEntity<CalculateOutput> calculateResponse = testRestTemplate.exchange(
                 getUri("device/calculate"),
                 HttpMethod.POST,
@@ -160,7 +165,7 @@ public class DeviceIntegrationTest {
         assertEquals(new BigDecimal("45.00"), calculateResponse.getBody().total);
 
         // deletes the device
-        HttpEntity<String> deleteRequest = new HttpEntity<>(getAuthHeaders());
+        HttpEntity<String> deleteRequest = new HttpEntity<>(testHelper.getAuthHeaders(authToken));
         ResponseEntity<String> deleteResponse = testRestTemplate.exchange(
                 getUri("device/" + deviceOutput.id),
                 HttpMethod.DELETE,
@@ -191,33 +196,9 @@ public class DeviceIntegrationTest {
         assertEquals(2, serviceOutput2.devices.size());
     }
 
-    private HttpHeaders getAuthHeaders(){
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
-        return headers;
-    }
-
     private URI getUri(String resource) throws URISyntaxException {
         final String url = baseUrl + resource;
         return new URI(url);
     }
-
-    private ResponseEntity<String> authenticate() throws Exception {
-        final String url = baseUrl + "login";
-        final URI uri = new URI(url);
-
-        JSONObject json = new JSONObject();
-        json.put("username", this.username);
-        json.put("password", this.password);
-
-        ResponseEntity<String> response = testRestTemplate.exchange(
-                uri,
-                HttpMethod.POST,
-                new HttpEntity<>(json.toString()),
-                String.class);
-
-        return response;
-    }
-
 
 }

@@ -16,6 +16,11 @@ public class AddServiceInput {
     @NotNull(message = "Service cost cannot be null")
     public final BigDecimal cost;
 
+    public AddServiceInput() {
+        this.name = "";
+        this.cost = BigDecimal.ZERO;
+    }
+
     public AddServiceInput(String name, BigDecimal cost) {
         this.name = name;
         this.cost = cost;

@@ -1,11 +1,10 @@
 package com.ninjaone.rmm.service;
 
 import com.ninjaone.rmm.device.DeviceEntity;
-import com.ninjaone.rmm.device.payload.AddDeviceOutput;
 import com.ninjaone.rmm.service.payload.AddServiceInput;
 import com.ninjaone.rmm.service.payload.AddServiceOutput;
-import com.ninjaone.rmm.service.payload.ServiceDeviceOutput;
 import com.ninjaone.rmm.service.payload.GetServiceOutput;
+import com.ninjaone.rmm.service.payload.ServiceDeviceOutput;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,8 +24,6 @@ public class DeviceService {
     private final ServiceRepository serviceRepository;
 
     private final DeviceConverter deviceConverter;
-
-    private final MathContext mathContext = new MathContext(2);
 
     @Autowired
     public DeviceService(DeviceRepository deviceRepository,
@@ -143,7 +140,6 @@ public class DeviceService {
 
         for (ServiceEntity service: device.getServices()) {
             final BigDecimal serviceCost = service.getCost().multiply(BigDecimal.valueOf(quantity));
-            //totalCost = totalCost.add(serviceCost, mathContext);
             totalCost = totalCost.add(serviceCost);
             services.add(new CalculateDetailedServiceOutput(service.getId(), service.getName(), serviceCost));
         }

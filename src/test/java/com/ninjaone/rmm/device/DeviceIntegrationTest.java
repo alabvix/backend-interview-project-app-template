@@ -22,11 +22,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource(locations = "classpath:DeviceIntegrationTest.properties")
+@TestPropertySource(locations = "classpath:IntegrationTest.properties")
 public class DeviceIntegrationTest {
 
     @LocalServerPort
@@ -65,13 +64,69 @@ public class DeviceIntegrationTest {
 
     @Test
     @DisplayName("Try to create a device with an empty name. Should return Http status 400")
-    public void createADeviceWithEmptyName() throws Exception {
+    public void createDeviceWithEmptyName() throws Exception {
         AddDeviceInput input = new AddDeviceInput("", DeviceType.WINDOWS_SERVER);
         HttpEntity<AddDeviceInput> addRequest = new HttpEntity<>(input, testHelper.getAuthHeaders(authToken));
         ResponseEntity<AddDeviceOutput> response = testRestTemplate
                 .exchange(getUri("device"), HttpMethod.POST, addRequest, AddDeviceOutput.class);
 
-        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Try to create a device with duplicated name. Should return Http status 400")
+    public void createDeviceWithDuplicatedName() throws Exception {
+        AddDeviceInput input = new AddDeviceInput("MacBook Pro", DeviceType.MAC);
+        HttpEntity<AddDeviceInput> addRequest = new HttpEntity<>(input, testHelper.getAuthHeaders(authToken));
+        ResponseEntity<String> response = testRestTemplate
+                .exchange(getUri("device"), HttpMethod.POST, addRequest, String.class);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertTrue(response.getBody().contains("Device with given system name already exists"));
+    }
+
+    @Test
+    @DisplayName("Change device system name and type")
+    public void changeDevice() throws Exception {
+        // Get existent device
+        HttpEntity<String> getRequest = new HttpEntity<>(testHelper.getAuthHeaders(authToken));
+        ResponseEntity<GetDeviceOutput> getResponse = testRestTemplate.exchange(
+                getUri("device/1"),
+                HttpMethod.GET,
+                getRequest,
+                GetDeviceOutput.class);
+
+        assertEquals(HttpStatus.OK, getResponse.getStatusCode());
+        assertNotNull(getResponse.getBody());
+        GetDeviceOutput getDeviceOutput = getResponse.getBody();
+
+        // Update name and type
+        UpdateDeviceInput input = new UpdateDeviceInput(getDeviceOutput.id,"Linux Arc Server v2",
+                DeviceType.LINUX_SERVER);
+
+        HttpEntity<UpdateDeviceInput> putRequest = new HttpEntity<>(input, testHelper.getAuthHeaders(authToken));
+        ResponseEntity<String> putResponse = testRestTemplate.exchange(
+                getUri("device/"),
+                HttpMethod.PUT,
+                putRequest,
+                String.class);
+
+        assertEquals(HttpStatus.NO_CONTENT, putResponse.getStatusCode());
+
+        // Checks the updated device
+        getResponse = testRestTemplate.exchange(
+                getUri("device/1"),
+                HttpMethod.GET,
+                getRequest,
+                GetDeviceOutput.class);
+
+        assertEquals(getResponse.getStatusCode(), HttpStatus.OK);
+        assertNotNull(getResponse.getBody());
+        getDeviceOutput = getResponse.getBody();
+
+        assertEquals("Linux Arc Server v2", getDeviceOutput.systemName);
+        assertEquals(DeviceType.LINUX_SERVER, getDeviceOutput.deviceType);
+
     }
 
     @Test
@@ -84,7 +139,7 @@ public class DeviceIntegrationTest {
         ResponseEntity<AddDeviceOutput> response = testRestTemplate
                 .exchange(getUri("device"), HttpMethod.POST, addRequest, AddDeviceOutput.class);
 
-        assertEquals(response.getStatusCode(), HttpStatus.CREATED);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
 
         AddDeviceOutput deviceOutput = response.getBody();
@@ -113,7 +168,7 @@ public class DeviceIntegrationTest {
                 getServiceRequest,
                 GetServiceOutput.class);
 
-        assertEquals(getServiceResponse.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK, getServiceResponse.getStatusCode());
         assertNotNull(getServiceResponse.getBody());
         GetServiceOutput serviceOutput = getServiceResponse.getBody();
         assertEquals("Cost Per Device", serviceOutput.name);

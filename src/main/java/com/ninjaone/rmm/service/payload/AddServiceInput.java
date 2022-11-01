@@ -2,6 +2,7 @@ package com.ninjaone.rmm.service.payload;
 
 import com.ninjaone.rmm.service.validation.ServiceName;
 
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -14,6 +15,7 @@ public class AddServiceInput {
     public final String name;
 
     @NotNull(message = "Service cost cannot be null")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Service cost should be greater then zero")
     public final BigDecimal cost;
 
     public AddServiceInput() {

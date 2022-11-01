@@ -75,9 +75,4 @@ public class DeviceEntity {
         this.services.add(service);
     }
 
-    public void removeService(ServiceEntity service) {
-        this.services.remove(service);
-        service.getDevices().remove(this);
-    }
-
 }
